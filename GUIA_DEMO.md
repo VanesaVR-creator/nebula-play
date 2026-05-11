@@ -1,6 +1,5 @@
 # ✦ NEBULA PLAY — Guía de Demostración para Presentación
-
-> **Duración estimada:** 12–15 minutos  
+ 
 > **URL:** `http://localhost:4000`
 
 ---
@@ -10,20 +9,16 @@
 1. Asegúrate de que el servidor está corriendo: `npm start`
 2. Abre el navegador en `http://localhost:4000`
 3. Configura el navegador en pantalla completa (F11)
-4. Cierra pestañas innecesarias para mantener el foco
 
 ---
 
-## PARTE 1 — Pantalla de inicio y login (2 min)
+## PARTE 1 — Pantalla de inicio y login
 
 ### Mostrar
 - La pantalla de bienvenida con el nombre **Nebula** prominente
 - Los badges: "Matching con IA", "Gestión de CV", "Panel para empresas"
 - Los dos botones de registro (candidato y empresa)
 - El formulario de login
-
-### Guión sugerido
-> *"Nebula Play es una plataforma de reclutamiento inteligente. Desde aquí, candidatos y empresas acceden a sus respectivos paneles. Los candidatos pueden crear su perfil, subir CVs y postularse a vacantes. Las empresas publican sus oportunidades y revisan aplicaciones."*
 
 ---
 
