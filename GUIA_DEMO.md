@@ -22,7 +22,7 @@
 
 ---
 
-## PARTE 2 — Flujo del candidato (5–6 min)
+## PARTE 2 — Flujo del candidato 
 
 ### 2.1 Iniciar sesión como candidato
 
@@ -54,7 +54,7 @@
 **Acciones:**
 - Clic en una vacante → Ver el detalle con imagen completa e info de la empresa
 
-### 2.4 Postularse con IA (punto fuerte)
+### 2.4 Postularse con IA 
 
 **En la pantalla de detalle de vacante:**
 1. Seleccionar un CV del dropdown
@@ -73,7 +73,7 @@
 
 ---
 
-## PARTE 3 — Flujo de la empresa (4–5 min)
+## PARTE 3 — Flujo de la empresa 
 
 ### 3.1 Cerrar sesión y entrar como empresa
 
@@ -117,7 +117,7 @@
 
 ---
 
-## PARTE 4 — Panel de administrador (2 min)
+## PARTE 4 — Panel de administrador 
 
 ### Cerrar sesión e iniciar como admin
 
@@ -138,9 +138,7 @@
 
 ---
 
-## PARTE 5 — Aspectos técnicos (opcional, 1–2 min)
-
-> Para audiencia técnica
+## PARTE 5 — Aspectos técnicos 
 
 - **Backend:** Node.js + Express + sesiones seguras
 - **Base de datos:** PostgreSQL con triggers (límite de 8 CVs por candidato)
