@@ -1,4 +1,4 @@
-# Nebula Play - versión profesional mejorada
+# Nebula Play 
 
 Plataforma web de reclutamiento y perfiles profesionales con Node.js, Express, HTML, CSS, JavaScript y PostgreSQL.
 
@@ -78,14 +78,5 @@ Debe mostrar `db:true`.
 - Correo: `rrhh@technova.com`
 - Contraseña: `empresa123`
 
-## Mejoras incluidas
-
-- Navbar funcional con enlaces activos
-- Cierre de sesión con confirmación
-- Modo oscuro y modo claro persistente
-- Pie de página profesional
-- Botón de archivo más compacto
-- Perfil con modal real para editar datos
-- Panel de empresa reorganizado
 - Métricas de empresa y candidato
 - SQL extra para cargar datos demo más completos
