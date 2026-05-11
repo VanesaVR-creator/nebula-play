@@ -1,82 +1,102 @@
-# Nebula Play 
+# Nebula Play
 
-Plataforma web de reclutamiento y perfiles profesionales con Node.js, Express, HTML, CSS, JavaScript y PostgreSQL.
+<p align="center">
+  <strong>Plataforma web de reclutamiento, perfiles profesionales, empresas, vacantes y postulaciones.</strong>
+</p>
 
-## Requisitos
+<p align="center">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=000" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
+</p>
 
-- Node.js instalado
-- PostgreSQL instalado
-- Base de datos `BDNebulaPlay` cargada
-- Visual Studio Code
+---
 
-## 1. Configurar `.env`
+## Descripción general
 
-El archivo `.env` debe estar en la raíz del proyecto, junto a `package.json`:
+**Nebula Play** es una plataforma web de reclutamiento diseñada para conectar candidatos con empresas mediante perfiles profesionales, publicación de vacantes, carga de currículums y postulación a empleos.
 
-```env
-DATABASE_URL=postgresql://postgres:hola@localhost:5432/BDNebulaPlay
-PORT=4000
-SESSION_SECRET=nebula_secret_123
-```
+El sistema permite manejar tres tipos de usuarios:
 
-Cambia `hola` si tu contraseña de PostgreSQL es diferente.
+| Tipo de usuario | Funciones principales |
+|---|---|
+| Postulante | Crear perfil, cargar CVs, buscar vacantes y postularse |
+| Empresa | Administrar perfil empresarial, publicar vacantes y revisar candidatos |
+| Administrador | Revisar usuarios, empresas, vacantes y contenido de la plataforma |
 
-## 2. Cargar base de datos
+---
 
-En pgAdmin crea la base `BDNebulaPlay` y ejecuta:
+## Funcionalidades principales
 
-1. `database/BDNebulaPlay.sql`
-2. opcional: `database/seed_demo_profesional.sql`
+### Postulante
 
-El segundo archivo agrega un candidato completo y una empresa con vacantes.
+- Registro e inicio de sesión.
+- Perfil profesional con datos personales.
+- Carga de currículums en formato PDF.
+- Visualización de bolsa de trabajo.
+- Postulación a vacantes usando un CV seleccionado.
+- Consulta del estado de postulaciones.
 
-## 3. Instalar dependencias
+### Empresa
 
-```bash
-npm install
-```
+- Registro e inicio de sesión empresarial.
+- Perfil de empresa con misión, visión, clientes y sedes.
+- Publicación de vacantes.
+- Visualización de candidatos postulados.
+- Revisión de CVs enviados por postulantes.
 
-## 4. Ejecutar
+### Administrador
 
-```bash
-npm run dev
-```
+- Visualización general de usuarios.
+- Gestión de empresas registradas.
+- Revisión de vacantes publicadas.
+- Edición de contenido informativo de la plataforma.
 
-Abrir:
+---
+
+## Tecnologías utilizadas
+
+| Tecnología | Uso dentro del proyecto |
+|---|---|
+| HTML | Estructura de las páginas |
+| CSS | Diseño visual, modo claro/oscuro y estilos responsivos |
+| JavaScript | Interactividad del frontend |
+| Node.js | Entorno de ejecución del servidor |
+| Express.js | Backend y rutas API |
+| PostgreSQL | Base de datos relacional |
+| pgAdmin | Administración de la base de datos |
+| Multer | Carga de archivos PDF e imágenes |
+| Express Session | Manejo de sesiones de usuario |
+| Bcrypt | Cifrado y validación de contraseñas |
+| Nodemon | Recarga automática del servidor en desarrollo |
+
+---
+
+## Estructura del proyecto
 
 ```txt
-http://localhost:4000
-```
-
-## 5. Verificar conexión
-
-```txt
-http://localhost:4000/api/health
-```
-
-Debe mostrar `db:true`.
-
-## Usuarios de prueba
-
-### Postulante existente
-- Correo: `juan@email.com`
-- Contraseña: `clave123`
-
-### Empresa existente
-- Correo: `empresa1@empresa.com`
-- Contraseña: `clave789`
-
-### Admin existente
-- Correo: `admin@plataforma.com`
-- Contraseña: `admin123`
-
-### Postulante demo profesional
-- Correo: `ana.talento@demo.com`
-- Contraseña: `demo123`
-
-### Empresa demo profesional
-- Correo: `rrhh@technova.com`
-- Contraseña: `empresa123`
-
-- Métricas de empresa y candidato
-- SQL extra para cargar datos demo más completos
+nebula-play/
+│
+├── database/
+│   ├── BDNebulaPlay.sql
+│   ├── seed_demo_profesional.sql
+│   └── seed_empresas_vacantes_candidatos.sql
+│
+├── public/
+│   ├── assets/
+│   ├── js/
+│   ├── pages/
+│   └── index.html
+│
+├── src/
+│   ├── db.js
+│   ├── middleware.js
+│   └── server.js
+│
+├── .env.example
+├── .gitignore
+├── package.json
+└── README.md
