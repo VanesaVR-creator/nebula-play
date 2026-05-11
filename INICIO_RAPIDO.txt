@@ -27,6 +27,3 @@ CREDENCIALES DEMO:
   Candidato:     ana.talento@demo.com   /  demo123
   Empresa:       rrhh@technova.com      /  empresa123
   Administrador: admin@plataforma.com   /  admin123
-
-GUÍA DE PRESENTACIÓN:
-  Lee el archivo GUIA_DEMO.md para el script completo.
