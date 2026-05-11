@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrador | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/admin.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links"><a class="nav-link active" href="/pages/admin.html">Administrador</a><button class="nav-link logout js-logout">Cerrar sesión</button></nav>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header"><h1>Panel de administración</h1><p>Visualiza usuarios, empresas, vacantes y contenido.</p></section>
+      <section class="stat-grid" id="overviewStats"></section>
+      <section class="admin-grid">
+        <aside class="card sidebar">
+          <nav>
+            <button class="btn btn-secondary active" data-tab="users">Usuarios</button>
+            <button class="btn btn-secondary" data-tab="companies">Empresas</button>
+            <button class="btn btn-secondary" data-tab="vacancies">Vacantes</button>
+            <button class="btn btn-secondary" data-tab="content">Contenido</button>
+          </nav>
+        </aside>
+        <section>
+          <article id="admin-users" class="card section-card"><h2 class="section-title">Usuarios registrados</h2><div id="usersList" class="table-list"></div></article>
+          <article id="admin-companies" class="card section-card hidden"><h2 class="section-title">Empresas registradas</h2><div id="companiesList" class="table-list"></div></article>
+          <article id="admin-vacancies" class="card section-card hidden"><h2 class="section-title">Vacantes activas</h2><div id="vacanciesList" class="table-list"></div></article>
+          <article id="admin-content" class="card section-card hidden">
+            <h2 class="section-title">Editar contenido estático</h2>
+            <form id="contentForm" class="form-grid">
+              <div class="field"><label>Misión</label><textarea class="textarea" name="mision" id="contentMission"></textarea></div>
+              <div class="field"><label>Visión</label><textarea class="textarea" name="vision" id="contentVision"></textarea></div>
+              <div class="form-grid form-grid--2">
+                <div class="field"><label>Correo contacto</label><input class="input" name="correo_contacto" id="contentEmail" /></div>
+                <div class="field"><label>Teléfono</label><input class="input" name="numero_telefono" id="contentPhone" /></div>
+              </div>
+              <div class="field"><label>Dirección</label><input class="input" name="direccion" id="contentAddress" /></div>
+              <div id="contentMessage" class="small"></div>
+              <button class="btn btn-primary" type="submit">Guardar contenido</button>
+            </form>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const { $, $$, api, ensureAuth, bindLogout, toast, serializeForm, ensureThemeButtons, ensureFooter } = window.Nebula;
+    function showTab(tab) {
+      ['users','companies','vacancies','content'].forEach((name) => $(`#admin-${name}`).classList.toggle('hidden', name !== tab));
+      $$('[data-tab]').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tab));
+    }
+    async function loadOverview() {
+      const data = await api('/api/admin/overview');
+      $('#overviewStats').innerHTML = `
+        <article class="card stat-card"><strong>${data.usuarios}</strong><span>Usuarios</span></article>
+        <article class="card stat-card"><strong>${data.empresas}</strong><span>Empresas</span></article>
+        <article class="card stat-card"><strong>${data.vacantes}</strong><span>Vacantes</span></article>`;
+    }
+    async function loadUsers() {
+      const rows = await api('/api/admin/users');
+      $('#usersList').innerHTML = rows.map((item) => `<article class="row"><div class="row__main"><strong>${item.nombre_completo || item.email}</strong><div class="small muted">${item.tipo_usuario}</div><div class="small muted">${item.experiencia_especialidad || 'Sin detalle adicional'}</div></div></article>`).join('');
+    }
+    async function loadCompanies() {
+      const rows = await api('/api/admin/companies');
+      $('#companiesList').innerHTML = rows.map((item) => `<article class="row"><div class="row__main"><strong>${item.nombre_empresa}</strong><div class="small muted">${item.descripcion || 'Sin descripción'}</div></div></article>`).join('');
+    }
+    async function loadVacancies() {
+      const rows = await api('/api/admin/vacancies');
+      $('#vacanciesList').innerHTML = rows.map((item) => `<article class="row"><div class="row__main"><strong>${item.nombre_imagen}</strong><div class="small muted">${item.nombre_empresa}</div></div><button class="btn btn-danger" data-delete-admin-vacancy="${item.id_vacante}">Desactivar</button></article>`).join('');
+      $$('[data-delete-admin-vacancy]').forEach((btn) => btn.addEventListener('click', async () => { await api(`/api/company/vacancies/${btn.dataset.deleteAdminVacancy}`, { method: 'DELETE' }); await loadVacancies(); }));
+    }
+    609('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+      showTab(btn.dataset.tab);
+      if(btn.dataset.tab==='users') loadUsers();
+      if(btn.dataset.tab==='companies') loadCompanies();
+      if(btn.dataset.tab==='vacancies') loadVacancies();
+      if(btn.dataset.tab==='content') loadContent();
+    }));
+    async function loadContent() {
+      const data = await api('/api/content');
+      $('#contentMission').value = data.mision || '';
+      $('#contentVision').value = data.vision || '';
+      $('#contentEmail').value = data.correo_contacto || '';
+      $('#contentPhone').value = data.numero_telefono || '';
+      $('#contentAddress').value = data.direccion || '';
+    }
+    $$('[data-tab]').forEach((btn) => btn.addEventListener('click', async () => {
+      showTab(btn.dataset.tab);
+      if (btn.dataset.tab === 'users') await loadUsers();
+      if (btn.dataset.tab === 'companies') await loadCompanies();
+      if (btn.dataset.tab === 'vacancies') await loadVacancies();
+      if (btn.dataset.tab === 'content') await loadContent();
+    }));
+    $('#contentForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        await api('/api/admin/content', { method: 'PUT', body: JSON.stringify(serializeForm(event.currentTarget)) });
+        toast($('#contentMessage'), 'Contenido actualizado.', 'success');
+      } catch (error) {
+        toast($('#contentMessage'), error.message, 'error');
+      }
+    });
+    (async () => {
+      const user = await ensureAuth(['admin']);
+      if (!user) return;
+      bindLogout(); ensureThemeButtons(); ensureFooter();
+      await Promise.all([loadOverview(), loadUsers()]);
+      showTab('users');
+    })();
+  </script>
+</body>
+</html>

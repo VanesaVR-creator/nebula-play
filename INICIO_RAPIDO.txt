@@ -1,0 +1,32 @@
+╔══════════════════════════════════════════════════════╗
+║           ✦ NEBULA PLAY — Inicio Rápido              ║
+╚══════════════════════════════════════════════════════╝
+
+REQUISITOS:
+  • Node.js 18+   → https://nodejs.org
+  • PostgreSQL 14+ → https://postgresql.org
+
+INSTALACIÓN AUTOMÁTICA (Mac / Linux):
+  ./setup.sh
+
+INSTALACIÓN MANUAL (Windows):
+  1. npm install
+  2. Crear base de datos:
+       createdb -U postgres BDNebulaPlay
+  3. Cargar esquema:
+       psql -U postgres -d BDNebulaPlay -f database/BDNebulaPlay.sql
+  4. Cargar datos demo:
+       psql -U postgres -d BDNebulaPlay -f database/seed_demo_profesional.sql
+  5. Editar archivo .env con tu contraseña de PostgreSQL
+  6. npm start
+
+ACCESO:
+  Abre → http://localhost:4000
+
+CREDENCIALES DEMO:
+  Candidato:     ana.talento@demo.com   /  demo123
+  Empresa:       rrhh@technova.com      /  empresa123
+  Administrador: admin@plataforma.com   /  admin123
+
+GUÍA DE PRESENTACIÓN:
+  Lee el archivo GUIA_DEMO.md para el script completo.

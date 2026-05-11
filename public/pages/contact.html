@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contáctanos | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/profile.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links" id="mainNav">
+          <a class="nav-link" data-match="contact" href="/pages/contact.html">Contacto</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header">
+        <h1>Comunícate con Nosotros</h1>
+        <p>Estamos aquí para ayudarte en lo que necesites</p>
+      </section>
+      <section class="contact-grid">
+        <div class="info-stack">
+          <article class="card contact-card">
+            <h3>📧 Correo electrónico</h3>
+            <p id="contactEmail" class="muted" style="margin-top:8px; font-size:1.05rem;"></p>
+          </article>
+          <article class="card contact-card">
+            <h3>📞 Teléfono</h3>
+            <p id="contactPhone" class="muted" style="margin-top:8px; font-size:1.05rem;"></p>
+          </article>
+          <article class="card contact-card">
+            <h3>📍 Oficina</h3>
+            <p id="contactAddress" class="muted" style="margin-top:8px; font-size:1.05rem;"></p>
+          </article>
+          <article class="card contact-card">
+            <h3>💬 WhatsApp</h3>
+            <a id="contactWhatsapp" class="btn btn-secondary" style="margin-top:8px; display:inline-flex;" href="#" target="_blank">Abrir WhatsApp</a>
+          </article>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; padding:4px;">
+            <a id="socialFb" class="btn btn-light" href="#" target="_blank" style="font-size:0.85rem;">Facebook</a>
+            <a id="socialIg" class="btn btn-light" href="#" target="_blank" style="font-size:0.85rem;">Instagram</a>
+            <a id="socialLn" class="btn btn-light" href="#" target="_blank" style="font-size:0.85rem;">LinkedIn</a>
+            <a id="socialYt" class="btn btn-light" href="#" target="_blank" style="font-size:0.85rem;">YouTube</a>
+          </div>
+        </div>
+        <article class="card section-card">
+          <h2 class="section-title">Envíanos un mensaje</h2>
+          <form id="contactForm" class="form-grid">
+            <div class="form-grid form-grid--2">
+              <div class="field"><label>Nombre completo *</label><input class="input" name="nombre" required /></div>
+              <div class="field"><label>Email *</label><input class="input" name="email" type="email" required /></div>
+            </div>
+            <div class="field"><label>Asunto *</label><input class="input" name="asunto" required /></div>
+            <div class="field"><label>Mensaje *</label><textarea class="textarea" name="mensaje" required placeholder="Escribe tu consulta aquí..."></textarea></div>
+            <div id="contactMessage" class="small"></div>
+            <button class="btn btn-primary" type="submit">Enviar mensaje</button>
+          </form>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const { api, ensureAuth, bindLogout, setActiveNav, ensureThemeButtons, ensureFooter, $, toast } = window.Nebula;
+    $('#contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      toast($('#contactMessage'), '¡Mensaje enviado! Nos pondremos en contacto pronto.', 'success');
+      e.currentTarget.reset();
+    });
+    (async () => {
+      const user = await ensureAuth(['postulante','empresa','admin']);
+      if (!user) return;
+      const nav = document.getElementById('mainNav');
+      if (user.tipo_usuario === 'postulante') {
+        nav.innerHTML = `
+          <a class="nav-link" data-match="profile" href="/pages/profile.html">Mi Perfil</a>
+          <a class="nav-link" data-match="jobs" href="/pages/jobs.html">Bolsa de Trabajo</a>
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link active" data-match="contact" href="/pages/contact.html">Contacto</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>`;
+      }
+      bindLogout(); setActiveNav(); ensureThemeButtons(); ensureFooter();
+      const content = await api('/api/content');
+      $('#contactEmail').textContent = content.correo_contacto || 'contacto@nebula.com';
+      $('#contactPhone').textContent = content.numero_telefono || '+52 55 1234 5678';
+      $('#contactAddress').textContent = content.direccion || 'Ciudad de México';
+      $('#contactWhatsapp').href = content.whatsapp_link || '#';
+      $('#socialFb').href = content.facebook_link || '#';
+      $('#socialIg').href = content.instagram_link || '#';
+      $('#socialLn').href = content.linkedin_link || '#';
+      $('#socialYt').href = content.youtube_link || '#';
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Empresa | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/company.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links">
+          <a class="nav-link active" data-match="company" href="/pages/company.html">Mi Empresa</a>
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header">
+        <h1>Panel de Empresa</h1>
+        <p>Gestiona tu perfil, publica vacantes y revisa candidatos</p>
+      </section>
+
+      <section class="card company-hero">
+        <div class="company-identity">
+          <div class="company-logo">🏢</div>
+          <div>
+            <h2 id="heroCompanyName">Cargando empresa...</h2>
+            <p id="heroCompanyDescription">Perfil empresarial</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" data-tab-link="vacantes">+ Publicar vacante</button>
+      </section>
+
+      <section class="company-kpis">
+        <div class="company-kpi"><strong id="kpiVacancies">0</strong><span>Vacantes activas</span></div>
+        <div class="company-kpi"><strong id="kpiCandidates">0</strong><span>Candidatos recibidos</span></div>
+        <div class="company-kpi"><strong id="kpiContacted">0</strong><span>Contactados</span></div>
+      </section>
+
+      <section class="company-grid">
+        <aside class="card sidebar">
+          <p class="sidebar-title">Menú empresa</p>
+          <nav>
+            <button class="active" data-tab="perfil">🏢 Perfil empresarial</button>
+            <button data-tab="vacantes">📋 Vacantes</button>
+            <button data-tab="candidatos">👥 Candidatos</button>
+            <button data-tab="soporte">🎧 Atención al cliente</button>
+          </nav>
+        </aside>
+
+        <section>
+          <article id="tab-perfil" class="card section-card">
+            <h2 class="section-title">Perfil empresarial</h2>
+            <p class="muted" style="margin-bottom:20px;">Esta información es visible para los candidatos al buscar tu empresa.</p>
+            <form id="companyProfileForm" class="form-grid form-grid--2">
+              <div class="field"><label>Nombre de la empresa</label><input class="input" name="nombre_empresa" id="companyName" required /></div>
+              <div class="field"><label>Sedes</label><input class="input" name="sedes" id="companySites" placeholder="Ciudad de México, Guadalajara..." /></div>
+              <div class="field" style="grid-column:1/-1;"><label>¿A qué se dedica?</label><textarea class="textarea" name="descripcion" id="companyDescription" placeholder="Describe el giro, productos o servicios de la empresa..."></textarea></div>
+              <div class="field"><label>Misión</label><textarea class="textarea" name="mision" id="companyMission" placeholder="¿Cuál es la misión de la empresa?"></textarea></div>
+              <div class="field"><label>Visión</label><textarea class="textarea" name="vision" id="companyVision" placeholder="¿Cuál es la visión a futuro?"></textarea></div>
+              <div class="field" style="grid-column:1/-1;"><label>Clientes / sectores atendidos</label><textarea class="textarea" name="clientes" id="companyClients" placeholder="¿A qué industrias o clientes sirve?"></textarea></div>
+              <div style="grid-column:1/-1; display:flex; gap:12px; align-items:center;">
+                <button class="btn btn-primary" type="submit">Guardar perfil</button>
+                <div id="companyProfileMessage" class="small"></div>
+              </div>
+            </form>
+          </article>
+
+          <article id="tab-vacantes" class="card section-card hidden">
+            <h2 class="section-title">Vacantes publicadas</h2>
+            <p class="muted" style="margin-bottom:18px;">Sube la imagen de tu vacante (cartel, imagen corporativa o diseño). Los candidatos la verán y podrán postularse.</p>
+            <form id="vacancyForm" class="form-grid form-grid--2" style="margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid rgba(255,255,255,.07);">
+              <div class="field"><label>Título de la vacante</label><input class="input" name="nombre_imagen" placeholder="Ej: Desarrollador Full Stack" required /></div>
+              <div class="field"><label>Imagen de vacante</label><input class="input" name="imagen_vacante" type="file" accept="image/*" required /></div>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <button class="btn btn-primary" type="submit">Publicar vacante</button>
+                <div id="vacancyMessage" class="small"></div>
+              </div>
+            </form>
+            <div id="vacancyGallery" class="gallery"></div>
+          </article>
+
+          <article id="tab-candidatos" class="card section-card hidden">
+            <h2 class="section-title">Candidatos postulados</h2>
+            <div class="metric-strip">
+              <div><strong id="metricPending">0</strong><span>Pendientes</span></div>
+              <div><strong id="metricSeen">0</strong><span>Vistos</span></div>
+              <div><strong id="metricContacted">0</strong><span>Contactados</span></div>
+            </div>
+            <div id="candidateList"></div>
+          </article>
+
+          <article id="tab-soporte" class="card section-card hidden">
+            <h2 class="section-title">Atención al cliente</h2>
+            <div class="pro-grid">
+              <div class="pro-card"><h3>📧 Correo</h3><p id="supportEmail" class="muted"></p></div>
+              <div class="pro-card"><h3>📞 Teléfono</h3><p id="supportPhone" class="muted"></p></div>
+              <div class="pro-card"><h3>🕐 Horario</h3><p id="supportSchedule" class="muted"></p></div>
+              <div class="pro-card"><h3>💬 WhatsApp</h3><a id="supportWhatsapp" class="btn btn-secondary" href="#" target="_blank" style="margin-top:8px; display:inline-flex;">Abrir chat</a></div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    const { $, $$, api, ensureAuth, bindLogout, toast, setActiveNav, ensureThemeButtons, ensureFooter, serializeForm } = window.Nebula;
+
+    function showTab(tab) {
+      ['perfil','vacantes','candidatos','soporte'].forEach((n) => $(`#tab-${n}`).classList.toggle('hidden', n !== tab));
+      $$('[data-tab]').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tab));
+    }
+
+    async function loadProfile() {
+      const profile = await api('/api/company/profile');
+      if (!profile) return;
+      $('#companyName').value = profile.nombre_empresa || '';
+      $('#companyDescription').value = profile.descripcion || '';
+      $('#companyMission').value = profile.mision || '';
+      $('#companyVision').value = profile.vision || '';
+      $('#companyClients').value = profile.clientes || '';
+      $('#companySites').value = profile.sedes || '';
+      $('#heroCompanyName').textContent = profile.nombre_empresa || 'Empresa';
+      $('#heroCompanyDescription').textContent = profile.descripcion || 'Completa tu perfil para atraer los mejores candidatos.';
+    }
+
+    async function loadVacancies() {
+      const vacancies = await api('/api/company/vacancies');
+      $('#kpiVacancies').textContent = vacancies.length;
+      if (!vacancies.length) {
+        $('#vacancyGallery').innerHTML = '<div class="upload-box">Aún no has publicado vacantes. ¡Sube tu primera imagen de vacante!</div>';
+        return;
+      }
+      $('#vacancyGallery').innerHTML = vacancies.map((item) => `
+        <article class="card vacancy-thumb">
+          <img src="${item.imagen_url}" alt="${item.nombre_imagen}" onerror="this.style.background='rgba(168,85,247,.1)'; this.alt='Sin imagen';" />
+          <div class="vacancy-thumb-name">${item.nombre_imagen}</div>
+          <div class="small muted" style="margin-bottom:8px;">${new Date(item.fecha_publicacion).toLocaleDateString('es-MX')}</div>
+          <button class="btn btn-danger" style="width:100%;" data-delete-vacancy="${item.id_vacante}">Desactivar</button>
+        </article>
+      `).join('');
+      $$('[data-delete-vacancy]').forEach((btn) => btn.addEventListener('click', async () => {
+        if (!confirm('¿Desactivar esta vacante?')) return;
+        await api(`/api/company/vacancies/${btn.dataset.deleteVacancy}`, { method: 'DELETE' });
+        await loadVacancies();
+      }));
+    }
+
+    async function loadCandidates() {
+      const rows = await api('/api/company/candidates');
+      $('#kpiCandidates').textContent = rows.length;
+      $('#kpiContacted').textContent = rows.filter(x => x.estado === 'contactado').length;
+      $('#metricPending').textContent = rows.filter(x => x.estado === 'pendiente').length;
+      $('#metricSeen').textContent = rows.filter(x => x.estado === 'visto').length;
+      $('#metricContacted').textContent = rows.filter(x => x.estado === 'contactado').length;
+      if (!rows.length) {
+        $('#candidateList').innerHTML = '<div class="upload-box">Aún no hay candidatos postulados. Publica vacantes para comenzar a recibir aplicaciones.</div>';
+        return;
+      }
+      $('#candidateList').innerHTML = rows.map((item) => `
+        <div class="candidate-card">
+          <div class="candidate-info">
+            <div class="candidate-vacancy">Vacante: ${item.vacante_titulo}</div>
+            <div class="candidate-name">${item.nombre_completo}</div>
+            <div class="candidate-exp">${item.experiencia_especialidad || 'Sin detalle de experiencia'}</div>
+            <div class="candidate-actions" style="margin-top:10px;">
+              <a class="btn btn-secondary" target="_blank" href="/api/candidate/cvs/${item.id_curriculum}/file">📄 Ver CV</a>
+              <button class="btn btn-light" data-status="visto" data-id="${item.id_postulacion}">👁 Marcar visto</button>
+              <button class="btn btn-primary" data-status="contactado" data-id="${item.id_postulacion}">✉ Contactar</button>
+              <button class="btn btn-danger" data-status="descartado" data-id="${item.id_postulacion}">✕ Descartar</button>
+            </div>
+          </div>
+          <span class="badge ${item.estado}">${item.estado}</span>
+        </div>
+      `).join('');
+      $$('[data-status]').forEach((btn) => btn.addEventListener('click', async () => {
+        await api(`/api/company/applications/${btn.dataset.id}/status`, { method: 'PATCH', body: JSON.stringify({ estado: btn.dataset.status }) });
+        await loadCandidates();
+      }));
+    }
+
+    $('#companyProfileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await api('/api/company/profile', { method: 'PUT', body: JSON.stringify(serializeForm(e.currentTarget)) });
+        toast($('#companyProfileMessage'), 'Perfil actualizado correctamente.', 'success');
+        await loadProfile();
+      } catch (err) { toast($('#companyProfileMessage'), err.message, 'error'); }
+    });
+
+    $('#vacancyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        await api('/api/company/vacancies', { method: 'POST', body: new FormData(e.currentTarget) });
+        toast($('#vacancyMessage'), 'Vacante publicada exitosamente.', 'success');
+        e.currentTarget.reset();
+        await loadVacancies();
+      } catch (err) { toast($('#vacancyMessage'), err.message, 'error'); }
+    });
+
+    $$('[data-tab]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const tab = btn.dataset.tab;
+        showTab(tab);
+        try {
+          if (tab === 'perfil') await loadProfile();
+          if (tab === 'vacantes') await loadVacancies();
+          if (tab === 'candidatos') await loadCandidates();
+        } catch (error) {
+          console.error('Error al cambiar pestaña:', error);
+          alert('No se pudo cargar esta sección. Revisa la conexión o la consola del navegador.');
+        }
+      });
+    });
+
+    $$('[data-tab-link]').forEach((link) => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const tab = link.dataset.tabLink;
+        showTab(tab);
+        try {
+          if (tab === 'vacantes') await loadVacancies();
+        } catch (error) {
+          console.error('Error al abrir la sección de vacantes:', error);
+          alert('No se pudo abrir la sección de vacantes.');
+        }
+      });
+    });
+
+    (async () => {
+      try {
+        const user = await ensureAuth(['empresa']);
+        if (!user) return;
+        bindLogout(); setActiveNav(); ensureThemeButtons(); ensureFooter();
+        try {
+          const content = await api('/api/content');
+          $('#supportEmail').textContent = content.correo_contacto || 'contacto@nebula.com';
+          $('#supportPhone').textContent = content.numero_telefono || '+52 55 1234 5678';
+          $('#supportSchedule').textContent = content.horario || 'Lunes a Viernes 9:00 - 18:00';
+          $('#supportWhatsapp').href = content.whatsapp_chat_link || '#';
+        } catch (error) {
+          console.warn('No se pudo cargar contenido de soporte:', error);
+        }
+        await loadProfile();
+        await loadVacancies();
+        await loadCandidates();
+        showTab('perfil');
+      } catch (error) {
+        console.error('Error cargando panel de empresa:', error);
+        $('#heroCompanyName').textContent = 'No se pudo cargar la empresa';
+        $('#heroCompanyDescription').textContent = error.message || 'Revisa la conexión con la base de datos.';
+      }
+    })();
+  </script>
+</body>
+</html>

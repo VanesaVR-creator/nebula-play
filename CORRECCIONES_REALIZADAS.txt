@@ -1,0 +1,37 @@
+NEBULA PLAY - VERSIÓN CORREGIDA DE FLUJO
+
+Correcciones principales realizadas:
+
+1. Se corrigió el conflicto de JavaScript que impedía ejecutar los scripts internos de las páginas.
+   - El archivo public/js/app.js ahora está encapsulado para evitar errores por variables globales duplicadas como $ y $$.
+   - Este error podía provocar que el panel de empresa se quedara en "Cargando empresa..." aunque la API sí respondiera correctamente.
+
+2. Se mejoró el panel de empresa.
+   - Los botones Perfil empresarial, Vacantes, Candidatos y Atención al cliente ahora tienen manejo seguro de errores.
+   - El botón + Publicar vacante abre correctamente la pestaña de vacantes.
+   - La carga inicial ya no bloquea toda la página si falla una sección secundaria.
+
+3. Se dejó configurado el archivo .env para la base local usada en el proyecto:
+   DATABASE_URL=postgresql://postgres:hola@localhost:5432/BDNebulaPlay
+   Si tu contraseña de PostgreSQL es diferente, modifica este archivo antes de ejecutar.
+
+4. Verificación recomendada:
+   - Ejecutar npm install
+   - Ejecutar npm run dev
+   - Abrir http://localhost:4000/api/health
+   - Debe responder: {"ok":true,"db":true}
+
+Usuarios de prueba:
+
+Empresa Go Global:
+Correo: rrhh@goglobal.com
+Contraseña: empresa123
+
+Postulante:
+Correo: carlos.carga@demo.com
+Contraseña: demo123
+
+Admin:
+Correo: admin@plataforma.com
+Contraseña: admin123
+

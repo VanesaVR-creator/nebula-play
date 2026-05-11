@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acerca de Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/profile.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links" id="mainNav">
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header">
+        <h1>Acerca de Nebula Play</h1>
+        <p>La plataforma que conecta talento con oportunidades desde 2024</p>
+      </section>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px;">
+        <section class="card section-card">
+          <div style="font-size:2rem; margin-bottom:12px;">🎯</div>
+          <h2 class="section-title">Nuestra Misión</h2>
+          <p id="missionText" class="muted" style="line-height:1.8;"></p>
+        </section>
+        <section class="card section-card">
+          <div style="font-size:2rem; margin-bottom:12px;">🔭</div>
+          <h2 class="section-title">Nuestra Visión</h2>
+          <p id="visionText" class="muted" style="line-height:1.8;"></p>
+        </section>
+      </div>
+
+      <section class="card section-card" style="margin-top:24px;">
+        <h2 class="section-title">Nuestros Valores</h2>
+        <div class="values-grid" id="valuesGrid"></div>
+      </section>
+
+      <section class="card section-card" style="margin-top:24px;">
+        <div style="font-size:2rem; margin-bottom:12px;">ℹ️</div>
+        <h2 class="section-title">Datos informativos</h2>
+        <p id="infoText" class="muted" style="line-height:1.8;"></p>
+      </section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const { api, ensureAuth, bindLogout, setActiveNav, ensureThemeButtons, ensureFooter, $ } = window.Nebula;
+    const ICONS = ['🌟','🚀','🤝','⚡'];
+    (async () => {
+      const user = await ensureAuth(['postulante','empresa','admin']);
+      if (!user) return;
+      // Inject full nav based on user type
+      const nav = document.getElementById('mainNav');
+      if (user.tipo_usuario === 'postulante') {
+        nav.innerHTML = `
+          <a class="nav-link" data-match="profile" href="/pages/profile.html">Mi Perfil</a>
+          <a class="nav-link" data-match="jobs" href="/pages/jobs.html">Bolsa de Trabajo</a>
+          <a class="nav-link active" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link" data-match="contact" href="/pages/contact.html">Contacto</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>`;
+      } else if (user.tipo_usuario === 'empresa') {
+        nav.innerHTML = `
+          <a class="nav-link" data-match="company" href="/pages/company.html">Mi Empresa</a>
+          <a class="nav-link active" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>`;
+      }
+      bindLogout(); setActiveNav(); ensureThemeButtons(); ensureFooter();
+      const content = await api('/api/content');
+      $('#missionText').textContent = content.mision || '';
+      $('#visionText').textContent = content.vision || '';
+      $('#infoText').textContent = content.datos_informativos || '';
+      const vals = [
+        {t: content.valor1_titulo, d: content.valor1_descripcion},
+        {t: content.valor2_titulo, d: content.valor2_descripcion},
+        {t: content.valor3_titulo, d: content.valor3_descripcion},
+        {t: content.valor4_titulo, d: content.valor4_descripcion},
+      ];
+      document.getElementById('valuesGrid').innerHTML = vals.map((v, i) => `
+        <div class="value-card">
+          <div class="value-icon">${ICONS[i]}</div>
+          <h3>${v.t || ''}</h3>
+          <p class="muted small" style="line-height:1.7;">${v.d || ''}</p>
+        </div>
+      `).join('');
+    })();
+  </script>
+</body>
+</html>

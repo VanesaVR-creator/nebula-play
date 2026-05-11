@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle de Vacante | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/profile.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links">
+          <a class="nav-link" data-match="profile" href="/pages/profile.html">Mi Perfil</a>
+          <a class="nav-link" data-match="jobs" href="/pages/jobs.html">Bolsa de Trabajo</a>
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link" data-match="contact" href="/pages/contact.html">Contacto</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <a class="back-link" href="/pages/jobs.html">← Volver a la bolsa de trabajo</a>
+      <section class="page-header">
+        <h1 id="jobTitle">Cargando vacante...</h1>
+        <p id="jobCompany" class="muted"></p>
+      </section>
+
+      <section class="job-detail-grid">
+        <article class="card section-card">
+          <div class="job-image-full" style="margin-bottom:24px;">
+            <img id="jobImage" alt="Imagen de la vacante" style="border-radius:16px; border:1px solid rgba(255,255,255,.07);" />
+          </div>
+          <h3 style="margin-bottom:16px; color:#d8b4fe;">Sobre la empresa</h3>
+          <div id="companyInfo" class="table-list"></div>
+        </article>
+
+        <aside class="card section-card" style="position:sticky; top:90px; align-self:start;">
+          <h2 class="section-title">Postularme</h2>
+          <div class="field" style="margin-bottom:16px;">
+            <label for="cvSelect">Selecciona tu CV</label>
+            <select id="cvSelect" class="select">
+              <option value="">Cargando CVs...</option>
+            </select>
+          </div>
+
+          <div id="matchDisplay" class="match-display" style="display:none;">
+            <div class="match-score-big" id="matchScore">--</div>
+            <div class="match-label" id="matchLabel">Compatibilidad estimada</div>
+          </div>
+
+          <div id="applyMessage" class="small" style="margin:12px 0;"></div>
+
+          <div class="inline-actions" style="flex-direction:column; gap:10px; margin-top:16px;">
+            <button id="checkMatchBtn" class="btn btn-secondary" style="width:100%;">✦ Calcular compatibilidad IA</button>
+            <button id="applyBtn" class="btn btn-primary" style="width:100%;">Enviar postulación</button>
+          </div>
+          <p class="small muted" style="margin-top:14px; text-align:center;">Tu CV será enviado directamente al reclutador de la empresa</p>
+        </aside>
+      </section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const { $, api, ensureAuth, bindLogout, setActiveNav, toast, ensureThemeButtons, ensureFooter } = window.Nebula;
+    const vacancyId = new URLSearchParams(window.location.search).get('id');
+
+    async function loadCvOptions() {
+      const cvs = await api('/api/candidate/cvs');
+      $('#cvSelect').innerHTML = cvs.length
+        ? ['<option value="">Selecciona tu CV para postularte</option>'].concat(cvs.map((cv) => `<option value="${cv.id_curriculum}">${cv.titulo}</option>`)).join('')
+        : '<option value="">No tienes CVs cargados — ve a tu perfil</option>';
+    }
+
+    async function loadVacancy() {
+      if (!vacancyId) { window.location.href = '/pages/jobs.html'; return; }
+      const data = await api(`/api/jobs/${vacancyId}`);
+      $('#jobTitle').textContent = data.titulo;
+      $('#jobCompany').textContent = data.empresa;
+      const img = $('#jobImage');
+      img.src = data.imagen_url;
+      img.onerror = () => { img.style.display='none'; };
+      $('#companyInfo').innerHTML = [
+        { label: 'Descripción', value: data.empresa_info.descripcion },
+        { label: 'Misión', value: data.empresa_info.mision },
+        { label: 'Visión', value: data.empresa_info.vision },
+        { label: 'Clientes / sectores', value: data.empresa_info.clientes },
+        { label: 'Sedes', value: data.empresa_info.sedes },
+      ].filter(i => i.value).map((item) => `
+        <article class="row">
+          <div class="row__main">
+            <strong style="color:#c084fc; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.05em;">${item.label}</strong>
+            <div class="small muted" style="margin-top:4px;">${item.value}</div>
+          </div>
+        </article>
+      `).join('') || '<p class="muted">Esta empresa aún no ha completado su perfil.</p>';
+    }
+
+    $('#checkMatchBtn').addEventListener('click', async () => {
+      const id_curriculum = $('#cvSelect').value;
+      if (!id_curriculum) return toast($('#applyMessage'), 'Selecciona un CV para calcular la compatibilidad.', 'error');
+      try {
+        $('#checkMatchBtn').textContent = 'Calculando...';
+        const result = await api(`/api/jobs/${vacancyId}/match?id_curriculum=${id_curriculum}`);
+        $('#matchScore').textContent = `${result.score}%`;
+        $('#matchLabel').textContent = result.label;
+        $('#matchDisplay').style.display = 'block';
+      } catch (e) {
+        toast($('#applyMessage'), e.message, 'error');
+      } finally {
+        $('#checkMatchBtn').textContent = '✦ Calcular compatibilidad IA';
+      }
+    });
+
+    $('#applyBtn').addEventListener('click', async () => {
+      const id_curriculum = $('#cvSelect').value;
+      if (!id_curriculum) return toast($('#applyMessage'), 'Selecciona un CV para postularte.', 'error');
+      try {
+        $('#applyBtn').textContent = 'Enviando...';
+        const result = await api(`/api/jobs/${vacancyId}/apply`, { method: 'POST', body: JSON.stringify({ id_curriculum }) });
+        toast($('#applyMessage'), '¡Postulación enviada exitosamente!', 'success');
+        $('#applyBtn').textContent = '✓ Postulado';
+        $('#applyBtn').disabled = true;
+      } catch (error) {
+        toast($('#applyMessage'), error.message, 'error');
+        $('#applyBtn').textContent = 'Enviar postulación';
+      }
+    });
+
+    (async () => {
+      const user = await ensureAuth(['postulante']);
+      if (!user) return;
+      bindLogout(); setActiveNav(); ensureThemeButtons(); ensureFooter();
+      await Promise.all([loadVacancy(), loadCvOptions()]);
+    })();
+  </script>
+</body>
+</html>

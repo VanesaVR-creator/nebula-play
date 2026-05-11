@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Perfil | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/profile.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links">
+          <a class="nav-link" data-match="profile" href="/pages/profile.html">Usuario</a>
+          <a class="nav-link" data-match="jobs" href="/pages/jobs.html">Bolsa de trabajo</a>
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de nosotros</a>
+          <a class="nav-link" data-match="contact" href="/pages/contact.html">Comunícate con nosotros</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Atención al cliente</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="page-header">
+        <h1>Mi Perfil</h1>
+        <p>Gestiona tu información profesional, tus CV y tus postulaciones.</p>
+      </section>
+
+      <div id="profileMessage" class="small"></div>
+
+      <section class="card profile-hero">
+        <div class="profile-main">
+          <div class="avatar" id="profileAvatar">👤</div>
+          <div>
+            <h2 class="profile-name" id="profileName">Cargando...</h2>
+            <p class="profile-role" id="profileRole">Perfil profesional</p>
+            <div class="info-grid">
+              <div class="info-item"><span>✉</span><strong id="profileEmail"></strong></div>
+              <div class="info-item"><span>🗓</span><strong id="profileBirth"></strong></div>
+              <div class="info-item"><span>▣</span><strong id="profileSex"></strong></div>
+              <div class="info-item"><span>◔</span><strong id="profileExpYears"></strong></div>
+            </div>
+            <div class="profile-stats">
+              <div class="profile-stat"><strong id="statCvs">0</strong><span>CV activos</span></div>
+              <div class="profile-stat"><strong id="statApps">0</strong><span>Postulaciones</span></div>
+              <div class="profile-stat"><strong id="statStatus">Activo</strong><span>Estado del perfil</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button id="editProfileBtn" class="btn btn-primary">Editar perfil</button>
+          <a class="btn btn-secondary" href="/pages/jobs.html">Buscar vacantes</a>
+        </div>
+      </section>
+
+      <section class="card section-card">
+        <h2 class="section-title">Experiencia Laboral</h2>
+        <div id="experienceCard" class="experience-item empty">Cargando experiencia...</div>
+      </section>
+
+      <section class="card section-card">
+        <h2 class="section-title">Currículum Vitae</h2>
+        <p class="muted">Puedes cargar hasta 8 CV en formato PDF, DOC o DOCX. Elige el que mejor coincida con cada vacante.</p>
+        <form id="cvForm" class="form-grid form-grid--2" style="margin:18px 0;">
+          <div class="field">
+            <label for="cvTitle">Título del CV</label>
+            <input class="input" id="cvTitle" name="titulo" placeholder="CV Frontend / CV General" />
+          </div>
+          <div class="field">
+            <label for="cvFile">Archivo</label>
+            <input class="input" id="cvFile" name="curriculum" type="file" accept=".pdf,.doc,.docx" required />
+          </div>
+          <button class="btn btn-primary" type="submit">Subir CV</button>
+          <div id="cvMessage" class="small"></div>
+        </form>
+        <div id="cvList" class="table-list"></div>
+      </section>
+
+      <section class="card section-card">
+        <h2 class="section-title">Mis postulaciones</h2>
+        <div id="applicationsList" class="table-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="editProfileModal" class="modal-backdrop hidden" aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="editProfileTitle">
+      <div class="modal__header">
+        <div>
+          <h2 id="editProfileTitle">Editar perfil profesional</h2>
+          <p class="muted">Actualiza la información que verán las empresas al revisar tu perfil.</p>
+        </div>
+        <button class="modal__close" data-close-modal="editProfileModal" type="button">×</button>
+      </div>
+      <form id="editProfileForm" class="form-grid form-grid--2">
+        <div class="field">
+          <label>Nombre completo</label>
+          <input class="input" name="nombre_completo" required />
+        </div>
+        <div class="field">
+          <label>Fecha de nacimiento</label>
+          <input class="input" name="fecha_nacimiento" type="date" required />
+        </div>
+        <div class="field">
+          <label>Sexo</label>
+          <select class="select" name="sexo" required>
+            <option>Masculino</option>
+            <option>Femenino</option>
+            <option>Otro</option>
+            <option>Prefiero no decir</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Puesto o especialidad</label>
+          <input class="input" name="puesto" placeholder="Desarrolladora Full Stack" required />
+        </div>
+        <div class="field">
+          <label>Años de experiencia</label>
+          <input class="input" name="anios" placeholder="3 años" required />
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label>Descripción profesional</label>
+          <textarea class="textarea" name="descripcion" placeholder="Describe tus habilidades, herramientas, certificaciones y logros..."></textarea>
+        </div>
+        <div class="inline-actions" style="grid-column:1/-1; justify-content:flex-end;">
+          <button class="btn btn-secondary" data-close-modal="editProfileModal" type="button">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Guardar cambios</button>
+        </div>
+        <div id="editProfileMessage" class="small" style="grid-column:1/-1;"></div>
+      </form>
+    </section>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    const { $, api, ensureAuth, bindLogout, toast, setActiveNav, openModal, closeModal, bindModals } = window.Nebula;
+    let currentProfile = null;
+
+    function parseExperience(text = '') {
+      const parts = text.split('.');
+      const first = (parts.shift() || '').trim();
+      const details = parts.join('.').trim();
+      const [puestoRaw, aniosRaw] = first.split(' - ');
+      return {
+        title: puestoRaw || 'Sin especialidad registrada',
+        years: aniosRaw || getYearsLabel(text),
+        details: details || 'Agrega una descripción de tus habilidades, proyectos y logros para mejorar tu perfil.',
+      };
+    }
+
+    function getYearsLabel(text = '') {
+      const match = text.match(/(Sin experiencia|\d+ año|\d+ años|\d+ años o más)/i);
+      return match ? match[0] : 'No especificado';
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      return String(value).slice(0, 10);
+    }
+
+    function renderApplications(apps) {
+      const container = $('#applicationsList');
+      if (!apps.length) {
+        container.innerHTML = '<div class="upload-box">Aún no has realizado postulaciones. Explora la bolsa de trabajo para comenzar.</div>';
+        return;
+      }
+      container.innerHTML = apps.map((item) => `
+        <article class="row">
+          <div class="row__main">
+            <strong>${item.vacante_titulo}</strong>
+            <div class="muted">${item.nombre_empresa}</div>
+            <div class="small muted">CV usado: ${item.curriculum_titulo}</div>
+            <div class="small muted">${new Date(item.fecha_postulacion).toLocaleString('es-MX')}</div>
+          </div>
+          <span class="badge ${item.estado}">${item.estado}</span>
+        </article>
+      `).join('');
+    }
+
+    function renderCvs(cvs) {
+      const list = $('#cvList');
+      $('#statCvs').textContent = cvs.length;
+      if (!cvs.length) {
+        list.innerHTML = '<div class="upload-box">No has subido tu CV todavía.</div>';
+        return;
+      }
+      list.innerHTML = cvs.map((cv) => `
+        <article class="row">
+          <div class="row__main">
+            <strong>${cv.titulo}</strong>
+            <div class="small muted">${cv.nombre_archivo || 'Archivo adjunto'}</div>
+          </div>
+          <div class="inline-actions">
+            <a class="btn btn-secondary" target="_blank" href="/api/candidate/cvs/${cv.id_curriculum}/file">Ver archivo</a>
+            <button class="btn btn-danger" data-delete-cv="${cv.id_curriculum}">Eliminar</button>
+          </div>
+        </article>
+      `).join('');
+      list.querySelectorAll('[data-delete-cv]').forEach((btn) => btn.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar este CV de tu perfil?')) return;
+        try {
+          await api(`/api/candidate/cvs/${btn.dataset.deleteCv}`, { method: 'DELETE' });
+          await loadPage();
+        } catch (error) {
+          toast($('#cvMessage'), error.message, 'error');
+        }
+      }));
+    }
+
+    async function loadPage() {
+      try {
+        const profile = await api('/api/candidate/profile');
+        const cvs = await api('/api/candidate/cvs');
+        const applications = await api('/api/candidate/applications');
+        currentProfile = profile;
+
+        if (!profile) throw new Error('No se encontró el perfil del postulante para este usuario.');
+
+        const parsed = parseExperience(profile.experiencia_especialidad || '');
+        $('#profileName').textContent = profile.nombre_completo;
+        $('#profileRole').textContent = parsed.title;
+        $('#profileEmail').textContent = profile.email;
+        $('#profileBirth').textContent = formatDate(profile.fecha_nacimiento);
+        $('#profileSex').textContent = profile.sexo;
+        $('#profileExpYears').textContent = parsed.years;
+        $('#statApps').textContent = applications.length;
+        $('#experienceCard').classList.remove('empty');
+        $('#experienceCard').innerHTML = `
+          <div>
+            <strong>${parsed.title}</strong>
+            <div class="muted">${parsed.years}</div>
+            <div class="small muted">${parsed.details}</div>
+          </div>
+          <button class="btn btn-light" id="quickEditBtn">Editar</button>
+        `;
+        $('#quickEditBtn').addEventListener('click', () => openEditModal(profile));
+        renderCvs(cvs);
+        renderApplications(applications);
+      } catch (error) {
+        toast($('#profileMessage'), error.message, 'error');
+      }
+    }
+
+    function openEditModal(profile) {
+      const parsed = parseExperience(profile.experiencia_especialidad || '');
+      const form = $('#editProfileForm');
+      form.nombre_completo.value = profile.nombre_completo || '';
+      form.fecha_nacimiento.value = formatDate(profile.fecha_nacimiento);
+      form.sexo.value = profile.sexo || 'Otro';
+      form.puesto.value = parsed.title || '';
+      form.anios.value = parsed.years || '';
+      form.descripcion.value = parsed.details || '';
+      toast($('#editProfileMessage'), '', 'small');
+      openModal('editProfileModal');
+    }
+
+    $('#editProfileBtn').addEventListener('click', () => {
+      if (currentProfile) openEditModal(currentProfile);
+    });
+
+    $('#editProfileForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const data = window.Nebula.serializeForm(event.currentTarget);
+      const experiencia_especialidad = `${data.puesto} - ${data.anios}. ${data.descripcion || ''}`.trim();
+      try {
+        await api('/api/candidate/profile', {
+          method: 'PUT',
+          body: JSON.stringify({
+            nombre_completo: data.nombre_completo,
+            fecha_nacimiento: data.fecha_nacimiento,
+            sexo: data.sexo,
+            experiencia_especialidad,
+          }),
+        });
+        toast($('#editProfileMessage'), 'Perfil actualizado correctamente.', 'success');
+        await loadPage();
+        setTimeout(() => closeModal('editProfileModal'), 600);
+      } catch (error) {
+        toast($('#editProfileMessage'), error.message, 'error');
+      }
+    });
+
+    $('#cvForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        await api('/api/candidate/cvs', { method: 'POST', body: new FormData(event.currentTarget) });
+        toast($('#cvMessage'), 'CV subido correctamente.', 'success');
+        event.currentTarget.reset();
+        await loadPage();
+      } catch (error) {
+        toast($('#cvMessage'), error.message, 'error');
+      }
+    });
+
+    (async () => {
+      const user = await ensureAuth(['postulante']);
+      if (!user) return;
+      bindLogout(); bindModals(); setActiveNav();
+      window.Nebula.ensureThemeButtons(); window.Nebula.ensureFooter();
+      await loadPage();
+    })();
+  </script>
+</body>
+</html>

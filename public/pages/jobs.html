@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bolsa de Trabajo | Nebula</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <a class="brand" href="/pages/profile.html"><span class="brand__star">✦</span><span>Nebula</span></a>
+        <nav class="nav-links">
+          <a class="nav-link" data-match="profile" href="/pages/profile.html">Mi Perfil</a>
+          <a class="nav-link" data-match="jobs" href="/pages/jobs.html">Bolsa de Trabajo</a>
+          <a class="nav-link" data-match="about" href="/pages/about.html">Acerca de</a>
+          <a class="nav-link" data-match="contact" href="/pages/contact.html">Contacto</a>
+          <a class="nav-link" data-match="support" href="/pages/support.html">Ayuda</a>
+          <button class="nav-link logout js-logout">Cerrar sesión</button>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <section class="page-header">
+        <h1>Bolsa de Trabajo</h1>
+        <p>Encuentra tu próxima oportunidad profesional</p>
+      </section>
+      <section class="jobs-toolbar">
+        <input id="jobSearch" class="input" placeholder="🔍  Buscar por empresa, puesto o palabras clave..." />
+        <div class="jobs-count" id="jobCount"></div>
+      </section>
+      <section id="jobsGrid" class="jobs-grid"></section>
+    </main>
+  </div>
+  <script src="/js/app.js"></script>
+  <script>
+    const { $, api, ensureAuth, bindLogout, setActiveNav, ensureThemeButtons, ensureFooter } = window.Nebula;
+    let jobs = [];
+
+    function renderJobs(data) {
+      $('#jobCount').textContent = `${data.length} vacante${data.length !== 1 ? 's' : ''} encontrada${data.length !== 1 ? 's' : ''}`;
+      if (!data.length) {
+        $('#jobsGrid').innerHTML = '<div class="upload-box" style="grid-column:1/-1">No se encontraron vacantes con esos criterios.</div>';
+        return;
+      }
+      $('#jobsGrid').innerHTML = data.map((job) => `
+        <article class="card job-card">
+          <div class="job-card__image">
+            <img src="${job.imagen_url}" alt="${job.titulo}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <div class="job-card__image-placeholder" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center;">📋</div>
+            <span class="job-card__image-badge">Nueva vacante</span>
+          </div>
+          <div class="job-card__body">
+            <p class="job-meta">${job.empresa}</p>
+            <h3 class="job-title">${job.titulo}</h3>
+            <p class="job-desc">${(job.descripcion || '').substring(0, 110)}${(job.descripcion || '').length > 110 ? '…' : ''}</p>
+            <div class="job-footer">
+              <button class="btn btn-primary" data-job="${job.id_vacante}">Ver vacante →</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+      document.querySelectorAll('[data-job]').forEach((btn) =>
+        btn.addEventListener('click', () => { window.location.href = `/pages/job.html?id=${btn.dataset.job}`; })
+      );
+    }
+
+    async function loadJobs(query = '') {
+      try {
+        jobs = await api(`/api/jobs?q=${encodeURIComponent(query)}`);
+        renderJobs(jobs);
+      } catch (e) {
+        $('#jobsGrid').innerHTML = '<div class="upload-box" style="grid-column:1/-1">Error cargando vacantes. Intenta de nuevo.</div>';
+      }
+    }
+
+    let searchTimer;
+    $('#jobSearch').addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadJobs(e.target.value), 300);
+    });
+
+    (async () => {
+      const user = await ensureAuth(['postulante']);
+      if (!user) return;
+      bindLogout(); setActiveNav(); ensureThemeButtons(); ensureFooter();
+      await loadJobs();
+    })();
+  </script>
+</body>
+</html>
